@@ -2,7 +2,6 @@
 
 type Expr =
     | Const of float
-    | Id of string
     | X of float * float
     | UnaryFunc of string * Expr
     | BinaryFunc of string * Expr * Expr

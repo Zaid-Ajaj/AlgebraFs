@@ -2,7 +2,6 @@
 
 open Expression
 open Patterns
-open Helpers
 
     /// differentiates an expression i.e. f(x) -> f'(x)
 let rec derivative expr =
@@ -105,7 +104,7 @@ let rec internal simp expr =
     | ArcCos e -> arccos' (simp e)
     | _ -> expr
 
-let rec fullSimp e = 
+let rec fullSimplify e = 
     let simplified = simp e
-    if simplified <> e && notSameLength simplified e then fullSimp simplified
+    if simplified <> e && notSameLength simplified e then fullSimplify simplified
     else simplified

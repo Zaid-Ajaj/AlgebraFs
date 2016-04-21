@@ -32,7 +32,7 @@ let rec internal nest f i n =
     | _ -> nest f (f i) (n-1)
 
 /// the nth-derivative of function f
-let internal nderivative f n = nest (derivative >> fullSimp) f n
+let internal nderivative f n = nest derivative f n
 
 let rec internal factorial (n: bigint) = 
     if n < 2I then 1I else Seq.fold (*) 1I [1I..n]
