@@ -4,7 +4,7 @@ open Parser
 let main argv = 
     while true do
         Console.ReadLine()
-        |> Parser.tryRead 
+        |> Parser.tryParse 
         |> function 
             | Undefined msg -> printf "Parse error: %s" msg
             | Value expr -> 

@@ -91,7 +91,7 @@ opp.AddOperator(PrefixOperator("-", ws, 6, true, neg))
 
 let completeExpression = ws >>. expr .>> eof
 
-let tryRead (input: string) : Expr result = 
+let tryParse (input: string) : Expr result = 
     match run completeExpression input with
     | Success(res,_,_) -> Value res
     | Failure(errMsg,_,_) -> Undefined errMsg
