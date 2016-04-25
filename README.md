@@ -10,5 +10,5 @@ This is my first attempt at making a CAS, it is very primitive that (for now) on
         |> Algebra.derivative
         |> Algebra.fullSimplify
         |> Printer.pretty
-        |> printfn "%s" // return "cos(5*x^2) * 10x"
+        |> printfn "%s" // returns "cos(5*x^2) * 10x"
 ```
