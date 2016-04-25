@@ -3,6 +3,7 @@
 // using partial active patterns
 open Expression
 
+
 let (|Sin|_|) = function
     | UnaryFunc("sin", expr) -> Some expr
     | _ -> None
@@ -57,6 +58,12 @@ let (|Prod|_|) = function
 
 let (|Power|_|) = function
     | BinaryFunc("pow", e1, e2) -> Some (e1, e2)
+    | _ -> None
+
+let (|Monomial|_|) = function
+    | Prod (Const coeff, Power(Id name, Const power)) -> Some (coeff, name, power)
+    | Power(Id name, Const power) -> Some (1.0, name, power)
+    | Id name -> Some (1.0, name, 1.0)
     | _ -> None
 
 let (|Sqrt|_|) = function

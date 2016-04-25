@@ -2,7 +2,7 @@
 
 type Expr =
     | Const of float
-    | X of float * float
+    | Id of string
     | UnaryFunc of string * Expr
     | BinaryFunc of string * Expr * Expr
 
@@ -13,7 +13,8 @@ type Expr =
     static member (^^) (e1,e2) = BinaryFunc("pow", e1, e2)
     static member (!!) e = BinaryFunc("prod", Const -1.0, e)
 
-
+let id name = Id name
+let monomial (id:Expr) coeff power = Const coeff * (id ^^ Const power)
 let zero = Const 0.0
 let minusone = Const (-1.0)
 let one = Const 1.0

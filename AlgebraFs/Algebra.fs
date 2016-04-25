@@ -7,9 +7,8 @@ open Patterns
 let rec derivative expr =
     match expr with
     | Const n -> zero
-    | X(a,n) when n = 1.0 -> Const a
-    | X(a,n) when n < 1.0 -> Const (a*n) * X(1.0,n - 1.0)
-    | X(a,n) -> X(a*n, n - 1.0)
+    | Monomial(coeff, id, 1.0) -> Const coeff
+    | Monomial(coeff, id, power) -> monomial (Id id) (coeff * power) (power - 1.0)
     | Sum(f, g) -> derivative f + derivative g
     | Prod(Const n, f) -> Const n * (derivative f)
     | Prod(f, g) -> (derivative f) * g + f * (derivative g)
@@ -32,7 +31,8 @@ let rec derivative expr =
 let rec internal length expr = 
     match expr with
     | Const _
-    | X(_) -> 1
+    | Monomial(_) -> 1
+    //| X(_) -> 1
     | UnaryFunc(_, e1) -> 1 + length e1
     | Sum(e1,e2) -> 1 + (length e1) + length (e2)
     | Prod(e1,e2) -> 1 + (length e1) + length (e2)
@@ -46,19 +46,18 @@ let rec internal length expr =
 let internal notSameLength e1 e2 = 
     length e1 <> length e2
 
-// implemets algebra rules to simplify expression
 let rec internal simp expr =
     match expr with
-    | X(0.0,_) -> Const 0.0
-    | X(a,0.0) -> Const a
+    | Monomial (coeff, something, power) when coeff = 0.0 -> Const 0.0
+    | Monomial (coeff, something, power) when power = 0.0 -> Const coeff
     | Sum(Const 0.0, e) -> simp e
     | Sum(e ,Const 0.0) -> simp e
     | Sum(Const n,Const m) -> Const (m+n)
-    | Sum(X(a,n),X(b,m)) when m = n -> X(a+b,m)
-    | Sum(e1,e2)     -> simp e1 + simp e2
-    | Power(e,Const 1.0) -> simp e
+    | Sum(Monomial (a, id, n), Monomial(b, id', m)) when id = id' && m = n -> monomial (Id id) (a+b) m
+    | Sum(e1, e2) -> simp e1 + simp e2
+    | Power(e, Const 1.0) -> simp e
     | Power(Const 1.0, e) -> Const 1.0
-    | Power(X(a,n),Const m) -> X(a ** m, m * n)
+    | Power(Monomial(a, id, n), Const m) -> monomial (Id id) (a ** m) (n * m)
     | Power(Const n, Const m) -> Const (n**m)
     | Power(Const 0.0, e) -> Const 0.0
     | Power(Cos(e),Const n) when n < 0.0 -> power(sec' (simp e),Const -n)
@@ -68,11 +67,9 @@ let rec internal simp expr =
     | Prod(Const 0.0,e) -> Const 0.0
     | Prod(e,Const 0.0) -> Const 0.0
     | Prod(Const n,Const m) -> Const (m*n)
-    | Prod(Const n, X(a,m)) when m > 0.0 -> X(n * a,m)
-    | Prod(X(a,n),X(b,m)) -> X(a * b,m+n)
-    | Prod(X(a,m), Const n) when m > 0.0 -> X(n * a,m)
-    | Prod(Sum(e1,e2),e) -> simp (e1*e) + simp (e2*e)
-    | Prod(e,Sum(e1,e2)) -> simp (e1*e) + simp (e2*e)
+    | Prod(Monomial(a, id, m), Const n) 
+    | Prod(Const n, Monomial(a, id, m)) -> monomial (Id id) (n*a) m
+    | Prod(Monomial(a, id, m), Monomial(b, id', n)) when id = id' -> monomial (Id id) (a * b) (m + n)
     | Prod(e,Power(e1,Const -1.0)) 
     | Prod(Power(e1,Const -1.0),e) when e = e1 -> Const 1.0
     | Prod(e,Power(Cos(e1),Const m)) when m < 0.0 -> prod(simp e, power(sec' (simp e1),Const -m))
@@ -104,7 +101,4 @@ let rec internal simp expr =
     | ArcCos e -> arccos' (simp e)
     | _ -> expr
 
-let rec fullSimplify e = 
-    let simplified = simp e
-    if simplified <> e && notSameLength simplified e then fullSimplify simplified
-    else simplified
+let fullSimplify = simp

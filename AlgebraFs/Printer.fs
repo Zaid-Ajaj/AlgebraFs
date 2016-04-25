@@ -4,22 +4,24 @@ open Expression
 open Patterns
 open Algebra
 
+let print (e:Expr) = Id (sprintf "%A" e)
+
 let rec pretty e = 
-    match simp e with
-    | X(1.0, 1.0) -> sprintf "x"
-    | X(1.0,n) when n < 0.0 -> sprintf "1/x^%A" (pretty (Const -n))
-    | X(1.0, n) when (round n) = n -> sprintf "x^%A" (int n)
-    | X(1.0,-0.5) -> sprintf "1/sqrt(x)"
-    | X(1.0,0.5) -> sprintf "sqrt(x)"
-    | X(-1.0,n) -> sprintf "-x^%A" (pretty <| Const n)
-    | X(a,1.0) when (round a) = a -> sprintf "%Ax" (int a)
-    | X(a,1.0) -> sprintf "%Ax" a
-    | X(1.0,n) -> sprintf "x^%A" n
-    | X(a,n) when n < 0.0 -> sprintf "%A * 1/x^%A" (pretty <| Const a) (pretty <| Const -n)
-    | X(a,n) when (round a) = a && (round n) = n -> sprintf "%Ax^%A" (int a) (int n)
-    | X(a,n) when (round a) = a -> sprintf "%Ax^%A" (int a) n
-    | X(a,n) when (round n) = n -> sprintf "%Ax^%A" a (int n)
-    | X(a,n) -> sprintf "%Ax^%A" a n
+    match e with
+    | Monomial (1.0, id, 1.0) -> sprintf "%s" id
+    | Monomial (1.0, id, n) when n < 0.0 -> sprintf "1/%s^%A" id (pretty (Const -n))
+    | Monomial (1.0, id, n) when (round n) = n -> sprintf "%s^%d" id (int n)
+    | Monomial (1.0, id, -0.5) -> sprintf "1/sqrt(%s)" id
+    | Monomial (1.0, id, 0.5) -> sprintf "sqrt(%s)" id
+    | Monomial (-1.0, id, n) -> sprintf "-%s^%A" id (pretty <| Const n)
+    | Monomial (a, id, 1.0) when (round a) = a -> sprintf "%d%s" (int a) id
+    | Monomial (a, id, 1.0) -> sprintf "%A*%s" a id
+    | Monomial (1.0, id, n) -> sprintf "%s^%A" id n
+    | Monomial (a, id, n) when n < 0.0 -> sprintf "%A * 1/%s^%A" (pretty <| Const a) id (pretty <| Const -n)
+    | Monomial (a, id, n) when (round a) = a && (round n) = n -> sprintf "%d*%s^%d" (int a) id (int n)
+    | Monomial (a, id, n) when (round a) = a -> sprintf "%A*%s^%A" (int a) id n
+    | Monomial (a, id, n) when (round n) = n -> sprintf "%A*%s^%A" a id (int n)
+    | Monomial (a, id, n) -> sprintf "%A*%s^%A" a id n
     | Const n when (round n) = n -> sprintf "%A" (int n)
     | Const n -> sprintf "%A" n
     | Neg e -> sprintf "-(%s)" (pretty e)
@@ -42,4 +44,5 @@ let rec pretty e =
     | ArcSin(e) -> sprintf "arcsin(%s)" (pretty e)
     | UnaryFunc(name, e) -> sprintf "%s(%s)" name (pretty e)
     | BinaryFunc(name, e, e1) -> sprintf "%s(%s, %s)" name (pretty e) (pretty e1)
+    | Id name -> name
     | _ -> sprintf "Expression %A cannot be pretty printed" e
