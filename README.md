@@ -4,8 +4,8 @@ This is my first attempt at making a CAS, it is very primitive that (for now) on
 "sin(5x^2)"
 |> Parser.tryParse 
 |> function 
-    | Undefined msg -> printf "Parse error: %s" msg
-    | Value expr -> 
+    | ParseError msg -> printf "Parse error: %s" msg
+    | Parsed expr -> 
         Calculus.derivative expr (Id "x")
         |> Algebra.fullSimplify
         |> Printer.pretty
