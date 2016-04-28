@@ -9,15 +9,15 @@ let rec internal eval e env  =
     match e with
     | Const n -> n
     | Monomial(a, id, power) -> 
-        let valueOfIdentified = Map.find id env
-        a * (valueOfIdentified ** power)
+        let valueOfIdentifier = Map.find id env
+        a * (valueOfIdentifier ** power)
     | Sum(f,g) -> (eval f env) + (eval g env)
     | Prod(f,g) -> (eval f env) * (eval g env)
     | Power(f,g) -> (eval f env) ** (eval g env)
     | Cos(f) -> cos (eval f env)
     | Sin(f) -> sin (eval f env)
     | Tan(f) -> tan (eval f env)
-    | Sec(f) -> 1.0 / sin(eval f env)
+    | Sec(f) -> 1.0 / cos (eval f env)
     | ArcTan(f) -> atan (eval f env)
     | ArcSin(f) -> asin (eval f env)
     | ArcCos(f) -> acos (eval f env)
