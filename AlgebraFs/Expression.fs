@@ -3,37 +3,40 @@
 type Expr =
     | Const of float
     | Id of string
-    | UnaryFunc of string * Expr
-    | BinaryFunc of string * Expr * Expr
+    | Func of string * Expr list
 
-    static member (+) (e1,e2) = BinaryFunc("sum", e1,e2)
-    static member (-) (e1,e2) = BinaryFunc("sum", e1, BinaryFunc("prod", Const -1.0, e2))
-    static member (*) (e1,e2) = BinaryFunc("prod", e1, e2)
-    static member (/) (e1,e2) = BinaryFunc("prod", e1, BinaryFunc("pow", e2,Const -1.0))
-    static member (^^) (e1,e2) = BinaryFunc("pow", e1, e2)
-    static member (!!) e = BinaryFunc("prod", Const -1.0, e)
+    static member (+) (e1,e2) = Func("sum",  [e1; e2])
+    static member (-) (e1,e2) = Func("sum",  [e1;  Func("prod", [Const -1.0; e2])])
+    static member (*) (e1,e2) = Func("prod", [e1; e2])
+    static member (/) (e1,e2) = Func("prod", [e1; Func("pow", [e2; Const -1.0])])
+    static member (^^) (e1,e2) = Func("pow", [e1; e2])
+    static member (!!) e = Func("prod", [Const -1.0; e])
+    static member Sin e = Func("sin", [e])
+    static member Cos e = Func("cos", [e])
+    static member Tan e = Func("tan", [e])
+    static member Asin e = Func("asin", [e])
+    static member Acos e = Func("acos", [e])
+    static member Atan e = Func("atan", [e])
+    static member Log e = Func("log", [e])
+    static member Exp e = Func("exp", [e])
+    static member Sinh e = Func("sinh", [e])
+    static member Cosh e = Func("cosh", [e])
+    static member Sqrt e = e ^^ Const -0.5
+
+
+
 
 let id name = Id name
 let monomial (id:Expr) coeff power = Const coeff * (id ^^ Const power)
 let zero = Const 0.0
 let minusone = Const (-1.0)
 let one = Const 1.0
-let sum(x, y)  = BinaryFunc("sum", x, y)
-let prod(x, y)  = BinaryFunc("prod", x, y)
-let power(e1, e2) = BinaryFunc("pow", e1, e2)
+
+let sum(x, y)  = x + y
+let prod(x, y)  = x * y
+let power(e1, e2) = e1 ^^ e2
 let div(e1, e2) = prod(e1, power(e2, minusone))
-let sin' x = UnaryFunc("sin", x)
-let cos' x = UnaryFunc("cos", x)
-let tan' x = UnaryFunc("tan", x)
-let arcsin' x = UnaryFunc("arcsin", x)
-let arccos' x = UnaryFunc("arccos", x)
-let arctan' x = UnaryFunc("arctan", x)
-let sec' x = UnaryFunc("sec", x)
-let log' x = UnaryFunc("log", x)
-let sinh' x = UnaryFunc("sinh", x)
-let cosh' x = UnaryFunc("cosh", x)
-let sqrt' x = power(x, Const -0.5)
-let exp' x = UnaryFunc("exp", x)
+let sec x = Func("sec", [x])
 let neg x = prod(minusone, x)
 let mul xs = Seq.fold (fun x y -> prod(x, y)) one xs
 let plus xs = Seq.fold (fun x y -> sum(x, y)) zero xs

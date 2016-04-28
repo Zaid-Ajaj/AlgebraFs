@@ -5,59 +5,59 @@ open Expression
 
 
 let (|Sin|_|) = function
-    | UnaryFunc("sin", expr) -> Some expr
+    | Func("sin", [expr]) -> Some expr
     | _ -> None
 
 let (|Cos|_|) = function
-    | UnaryFunc("cos", expr) -> Some expr
+    | Func("cos", [expr]) -> Some expr
     | _ -> None
 
 let (|Tan|_|) = function
-    | UnaryFunc("tan", expr) -> Some expr
+    | Func("tan", [expr]) -> Some expr
     | _ -> None
 
 let (|Sec|_|) = function
-    | UnaryFunc("sec", e) -> Some e
+    | Func("sec", [expr]) -> Some expr
     | _ -> None
 
 let (|ArcSin|_|) = function 
-    | UnaryFunc("arcsin", expr) -> Some expr
+    | Func(("asin"|"arcsin"), [expr]) -> Some expr
     | _ -> None 
 
 let (|ArcCos|_|) = function 
-    | UnaryFunc("arccos", expr) -> Some expr
+    | Func(("acos"|"arccos"), [expr]) -> Some expr
     | _ -> None 
 
 let (|ArcTan|_|) = function
-    | UnaryFunc("arctan", expr) -> Some expr
+    | Func(("atan"|"arctan"), [expr]) -> Some expr
     | _ -> None
 
 let (|Log|_|) = function 
-    | UnaryFunc("log", expr) -> Some expr
+    | Func("log", [expr]) -> Some expr
     | _ -> None
 
 let (|Exp|_|) = function
-    | UnaryFunc("exp", expr) -> Some expr
+    | Func("exp", [expr]) -> Some expr
     | _ -> None
 
 let (|Sinh|_|) = function 
-    | UnaryFunc("sinh", expr) -> Some expr
+    | Func("sinh", [expr]) -> Some expr
     | _ -> None
 
 let (|Cosh|_|) = function 
-    | UnaryFunc("cosh", expr) -> Some expr
+    | Func("cosh", [expr]) -> Some expr
     | _ -> None
 
 let (|Sum|_|) = function
-    | BinaryFunc("sum", e1, e2) -> Some (e1, e2)
+    | Func("sum", [e1; e2]) -> Some (e1, e2)
     | _ -> None
 
 let (|Prod|_|) = function
-    | BinaryFunc("prod", e1, e2) -> Some (e1, e2)
+    | Func("prod", [e1; e2]) -> Some (e1, e2)
     | _ -> None 
 
 let (|Power|_|) = function
-    | BinaryFunc("pow", e1, e2) -> Some (e1, e2)
+    | Func("pow", [e1; e2]) -> Some (e1, e2)
     | _ -> None
 
 let (|Monomial|_|) = function
@@ -73,4 +73,9 @@ let (|Sqrt|_|) = function
 let (|Neg|_|) = function
     | Prod(Const -1.0, e)
     | Prod(e, Const -1.0) -> Some e
+    | Monomial(n, id, e) when n < 0.0 -> Some (monomial (Id id) -n e)
+    | _ -> None
+
+let (|Vector|_|) = function
+    | Func(("vector"|"list"), xs) -> Some xs 
     | _ -> None

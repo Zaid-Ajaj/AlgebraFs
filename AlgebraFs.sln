@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "AlgebraFs", "AlgebraFs\AlgebraFs.fsproj", "{6C3EF3B7-D4CE-42FB-BAB9-2D3D8AE104B6}"
 EndProject
