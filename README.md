@@ -6,8 +6,7 @@ This is my first attempt at making a CAS, it is very primitive that (for now) on
 |> function 
     | Undefined msg -> printf "Parse error: %s" msg
     | Value expr -> 
-        expr
-        |> Algebra.derivative
+        Calculus.derivative expr (Id "x")
         |> Algebra.fullSimplify
         |> Printer.pretty
         |> printfn "%s" // returns "cos(5*x^2) * 10x"
