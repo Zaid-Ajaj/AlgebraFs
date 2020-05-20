@@ -27,6 +27,9 @@ bld/
 *.VisualState.xml
 TestResult.xml
 
+#Ionide
+.ionide/
+
 # Build Results of an ATL Project
 [Dd]ebugPS/
 [Rr]eleasePS/
